@@ -1,0 +1,35 @@
+{% load nav_helper %}
+<div class="container" align="center">
+	<div class="row" align="center">
+		<div class="col-12">
+			<a href="/"><img src="/media/forum_pngs/django.png" style="width:25%;"></a>
+		</div>
+		
+	</div>
+
+	<div class="col-4 subForum_header" style="padding: 5px;">
+		{% if not request.user.is_authenticated %}
+		<form method="POST" action="{% url 'user:login' %}">
+			{% csrf_token %}
+			<label style="width:75px;">Username</label> : <input type="text" name="username" id="id_username" required> <br>
+			<label style="width:75px;">Password</label> : <input type="password" name="password" id="id_password" required> <br>
+			<br>
+			<button type="submit" class="btn-sm btn-primary">
+		Sign in</button> OR <a href="{% url 'user:register' %}" class="btn-sm btn-success">Sign up</a>
+		</form>
+		{% else %}
+		<i class="fas fa-user">Welcome</i>  <a href="{% url 'user:userPanel' request.user %}">
+		{{request.user}}</a><br>
+		<i class="fas fa-sign-out-alt"></i><a href="{% url 'user:logout' %}">Logout</a>
+		{% endif %}
+	</div>
+
+	<div class="row">
+
+		<div class="col-12 subForum_header" align="left">
+
+			<div style="margin-left: 15px;"><i class="fas fa-map-signs" style="margin-right: 10px;"></i> {{ request.path|link_map|safe }}</div>
+		</div>
+
+	</div>
+</div>

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block body %}
+
+
+<div class="container" align="center">
+    <form method="POST">
+    {% csrf_token %}
+    <label>Current forum <i class="fas fa-arrow-right"></i> {{post.forum}}</label> <br>
+    <label for="cars">Choose a forum:</label>
+    
+    <select name="forums" id="forums">
+        {% for forum in forums %}
+        <option disabled style="color:black;font-weight: bold;">{{forum}}</option>
+        {% for subforum in forum.subforum_set.union %}
+        <option value="{{subforum.id}}">{{subforum}}</option>
+        {% endfor %}
+        {% endfor %}
+    </select>
+    <br>
+    <button type="submit" class="btn btn-primary">Apply !</button>
+  </form>
+</div>
+
+<style>
+    #forums{
+        padding: 5px;
+        border-radius: 5px;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    #forums:hover{
+        border: 1px solid lightblue;
+        -webkit-box-shadow: 0px 0px 20px 5px lightblue; 
+        box-shadow: 0px 0px 20px 5px lightblue;
+    }
+</style>
+{% endblock %}

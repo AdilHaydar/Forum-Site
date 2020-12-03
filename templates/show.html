@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% block body %}
+{% load crispy_forms_tags %}
+<div class="container">
+	<div class="row forum_header">
+		<div class="col-4">
+			<i class="far fa-clock" style="margin-top:4px;"></i>  {{ topic.created_date }}
+		</div>
+		{% if request.user.is_staff %}
+		<div class="dropdown col-3 offset-5">
+		  <button class="btn btn-outline dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Dropdown button
+		  </button>
+		  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+		    <a class="dropdown-item" href="{% url 'Topic:lock' topic.slug %}">Lock Topic</a>
+		    <a class="dropdown-item" href="{% url 'Topic:move' topic.slug %}">Move Topic</a>
+		    
+		  </div>
+		</div>
+		{% endif %}
+	</div>
+	<a style="margin-left:5px;" href="#comment_form" class="btn-sm btn-dark">Comment</a>
+	<div class="row subForum_header">
+
+		<div class="col-2 user_field" align="center">
+			<a style="font-size: 16px;color:{{topic.owner.userpermission.get_color}}; {% if topic.owner.is_banned %}text-decoration: line-through;{% else %} text-decoration: none;{% endif %}font-weight: bold;margin-top:10px; width: 100%;background-color:white; padding:1px;" href="#">{{ topic.owner.username }}</a>
+			<br>
+			<img src="{{ topic.owner.userpermission.get_icon }}" style="width:100%;background-color:white;padding:1px;border-radius: 5px;">
+			<br>
+			<img src="{{ topic.owner.get_image_or_default }}" style="margin-top:5px;margin-bottom:5px;width: 100%;height: 80%;padding:1px;background-color:white;">
+			<div style="font-size: 10px;background-color:white;border-radius: 5px;margin-bottom:3px;text-align: left;padding: 3px;">Registered Date: {{topic.owner.timestamp|date}}</div>
+			<div style="background-color:white;border-radius: 5px;margin-bottom:3px;text-align: left;padding: 3px;">Comments: {{topic.owner.comment_set.count}}</div>
+			<div style="background-color:white;border-radius: 5px;text-align: left;padding: 3px;margin-bottom:3px;">Topics: {{topic.owner.topic_set.count}}
+			</div>
+			<div style="font-size: 10px;background-color:white;border-radius: 5px;margin-bottom:3px;text-align: left;padding: 3px;">Last Login: {{topic.owner.last_login|date}}</div>
+		</div>
+		<div class="col-10">
+		<strong><i class="far fa-newspaper"></i> Title : {{topic.title}}</strong>
+		<hr>
+		{{topic.content|safe}}
+		</div>
+	</div>
+	{% for comment in comments %}
+	<div class="row subForum_header">
+		<div class="col-2 user_field" align="center">
+			<a style="font-size: 16px;color:{{comment.owner.userpermission.get_color}}; text-decoration: none;font-weight: bold;margin-top:10px;margin-bottom:10px; width: 100%;background-color:white; padding:1px;" href="#">{{ comment.owner.username }}</a>
+			<br>
+			<img src="{{ comment.owner.userpermission.get_icon }}" style="width:100%;background-color:white;padding:1px;border-radius: 5px;">
+			<br>
+			<img src="{{ comment.owner.get_image_or_default }}" style="margin-top:5px;margin-bottom:5px;width: 100%;height: 80%;padding:1px;background-color:white; ">
+			<div style="font-size: 10px;background-color:white;border-radius: 5px;margin-bottom:3px;text-align: left;padding: 3px;">Registered Date: {{comment.owner.timestamp|date}}</div>
+			<div style="background-color:white;border-radius: 5px;margin-bottom:3px;text-align: left;padding: 3px;">Comments: {{comment.owner.comment_set.count}}</div>
+			<div style="background-color:white;border-radius: 5px;text-align: left;padding: 3px;margin-bottom:3px;">Topics: {{comment.owner.topic_set.count}}</div>
+			<div style="font-size: 10px;background-color:white;border-radius: 5px;margin-bottom:3px;text-align: left;padding: 3px;">Last Login: {{comment.owner.last_login|date}}</div>
+		</div>
+		<div class="col-10">
+		<strong><i class="fas fa-comment"></i> {{comment.created_date}}</strong>
+		<hr>
+		{{comment.content|safe}}
+		</div>
+	</div>
+	{% endfor %}
+	
+	{% if comments.has_other_pages %}
+	<div class="subForum_header">
+    <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+	{% if comments.has_previous %}
+	    <li class="page-item"><a class="page-link" href="?page={{ comments.previous_page_number }}">&laquo;</a></li>
+	{% else %}
+	    <li class="disabled page-item"><span class="page-link">&laquo;</span></li>
+	{% endif %}
+	{% for i in comments.paginator.page_range %}
+	{% if comments.number == i %}
+	    <li class="activate page-item"><span class="page-link">{{ i }}<span class="sr-only">(current)</span></span></li>
+	{% else %}
+	    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+	{% endif %}
+	{% endfor %}
+	{% if comments.has_next %}
+	    <li class="page-item"><a class="page-link" href="?page={{ comments.next_page_number}}">&raquo;</a></li>
+	{% else %}
+	    <li class="disabled page-item"><span class="page-link">&raquo;</span></li>
+	{% endif %}
+	</ul>
+	</div>
+	{% endif %}
+
+	{% if topic.lock_topic %}
+	{% if request.user.is_staff %}
+	<div class="subForum_header" style="padding:10px;">
+		<form method="POST" action="{% url 'Topic:create_comment' name topic.slug %}" class="form_style" align="center" id="comment_form">
+			<div class="row">
+				<div class="col-3"> </div>
+				<div class="col-6" id="attention"></div>
+				<div class="col-3"> </div>
+			</div>
+			{% csrf_token %}
+			{{ comment_form.media }}
+			{{ comment_form|crispy }}
+			<button {% if not request.user.is_authenticated %} title="Logged in for comment" {% endif %} id="comment_button" type="submit" class="btn btn-outline-dark" onclick='auth(this)'>Comment</button>
+		</form>
+	</div>
+	{% else %}
+	<div class="subForum_header" style="padding:10px;" align="center">
+		<i title="Locked Topic" class="fas fa-lock" style="font-size:64px;margin-top:5px;width: 100%;height: 100%;"></i>
+	</div>
+	{% endif %}
+	{% else %}
+	<div class="subForum_header" style="padding:10px;">
+		<form method="POST" action="{% url 'Topic:create_comment' name topic.slug %}" class="form_style" align="center" id="comment_form">
+			<div class="row">
+				<div class="col-3"> </div>
+				<div class="col-6" id="attention"></div>
+				<div class="col-3"> </div>
+			</div>
+			{% csrf_token %}
+			{{ comment_form.media }}
+			{{ comment_form|crispy }}
+			<button {% if not request.user.is_authenticated %} title="Logged in for comment" {% endif %} id="comment_button" type="submit" class="btn btn-outline-dark" onclick='auth(this)'>Comment</button>
+		</form>
+	</div>
+	{% endif %}
+</div>
+<style>
+	.user_field{
+		border: 1px inset lightblue;
+		background-color: lightblue;
+		padding: 5px;
+		width: 100%;
+		height: 100%;
+	}
+	#attention{
+		color:white;
+		background: red;
+		border: 1px;
+		width: 60%;
+	}
+</style>
+
+<script>
+	function auth(){
+		const is_authenticated = eval("{{ request.user.is_authenticated|lower }}")
+		const attention_text = document.getElementById('attention')
+		
+		if(is_authenticated)
+		{
+			attention_text.innerText = ''
+		}
+		else
+		{
+			attention_text.innerText = 'You must logged in for apply comment!'
+		}
+	}
+
+	window.onload = function(){button_clickable()}
+
+	function button_clickable(){
+		const button = document.getElementById('comment_button')
+		const is_authenticated = eval("{{ request.user.is_authenticated|lower }}")
+
+		if(!is_authenticated)
+		{
+			button.disabled = 'disabled'
+		}
+		auth()
+	}
+</script>
+{% endblock %}
+
+

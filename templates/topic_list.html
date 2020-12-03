@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load poll_extras %}
+{% block body %}
+<div class="container-fluid">
+    <a href="{% url 'Topic:create' subForum.name %}" class="btn btn-primary" style="margin-left:6px;">New Post</a>
+    <div class="forum_header">Forum Title : {{ subForum.name }}</div>
+    <div>
+        
+        <div align="center" class="subForum_header">
+            <div class="row">
+                <div class="col-1"></div>
+                <div class="col-7" style="text-align: left;">Title of Topic</div>
+                <div class="col-2 border_lr">Last Comment</div>
+                <div class="col-1">Comments</div>
+                <div class="col-1 border_lr">Views</div>
+            </div>
+        </div>
+        {% for topic in topics %}
+        <div class="subForum_header" align="center">
+
+            
+            <div class="row">
+                <div class="col-1" align="center">{% if topic.lock_topic %}<i title="Locked Topic" class="fas fa-lock" style="font-size:22px;margin-top:5px;width: 100%;"></i>{% else %}<i class="far fa-sticky-note" style="font-size:22px;margin-top:5px;"></i>{% endif %}</div>
+                <div class="col-7" style="text-align: left;"><a href="{% url 'Topic:show' subForum.name topic.slug %}">{{topic.title}}</a><br> <small>{{topic.owner}}</small></div>
+                <div class="col-2 border_lr" style="font-size: 11px;">
+                    Tarih: {{ topic|last_index_date }}
+                    <br> <strong>Gönderen: </strong>
+                    {{ topic|last_index }}
+                </div>
+                <div class="col-1">{{ topic.comment_set.count }}</div>
+                <div class="col-1 border_lr">{{ topic.views }}</div>
+            </div>
+            
+        </div>
+        {% endfor %}
+        
+
+    </div>
+</div>
+
+
+{% if topics.has_other_pages %}
+    <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+{% if topics.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ topics.previous_page_number }}">&laquo;</a></li>
+{% else %}
+    <li class="disabled page-item"><span class="page-link">&laquo;</span></li>
+{% endif %}
+{% for i in topics.paginator.page_range %}
+{% if topics.number == i %}
+    <li class="activate page-item"><span class="page-link">{{ i }}<span class="sr-only">(current)</span></span></li>
+{% else %}
+    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+{% endif %}
+{% endfor %}
+{% if topics.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ topics.next_page_number}}">&raquo;</a></li>
+{% else %}
+    <li class="disabled page-item"><span class="page-link">&raquo;</span></li>
+{% endif %}
+</ul>
+{% endif %}
+<style>
+    td:nth-child(even), th:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+</style>
+{% endblock %}
+
+

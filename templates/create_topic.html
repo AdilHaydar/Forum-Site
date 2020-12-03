@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block body %}
+
+<div class="container">
+	<div class="subForum_header" style="padding: 5px 10px 5px 10px">
+		<form method="POST">
+			
+			{% csrf_token %}
+			{{form.media}}
+			{{form|crispy}}
+			<button type="submit" class="btn btn-primary">Submit</button>
+
+		</form>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="shortcut icon" type="image/png" href="/media/favicon.png"/>
+    <link href="{% static 'fontawesome-free-5.13.0-web/css/all.css' %}" rel="stylesheet">
+    <title>Forum Site</title>
+  </head>
+  <body>
+    {% if messages %}
+	    {% for message in messages %}
+	    	<div class=" container-fluid">
+		        <div class="alert alert-{{message.tags}} alert-dismissible" id="alert" role="alert">
+		            <button type="button"  class="close" id="close" data-dismiss="alert" aria-label="Close">
+		                <span aria-hidden="true">&times;</span>
+		            </button>
+		            {{ message }}
+		        </div>
+	    	</div>
+	    {% endfor %}
+	{% endif %}
+	{% include "navbar.html" %}
+	
+	{% block body %}
+
+	{% endblock %}
+	
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
+</html>
+
+<style>
+	body 
+	{
+		background-color: lightgray;
+		font-family: verdana;
+	}
+	.nav_header
+	{
+		height: 220px;
+		border: 1px solid lightblue;
+		border-radius: 5px;
+		padding: 3px;
+		margin: 5px;
+		background-color: white;
+	}
+	.nav_child:not(:last-child)
+	{
+		border-right: 2px solid lightgray;
+	}
+	.col-1{
+		text-align: center;
+	}
+	.forum_nav
+	{
+		font-size: 12px;
+	}
+	.border_lr
+	{
+		border-left: 1px lightgray solid;
+		border-right: 1px lightgray solid;
+	}
+	.forum_header
+	{
+		background-color: rgba(0,70,180,0.9);
+		background: linear-gradient(90deg, rgba(0,70,255,1) 0%, rgba(0,70,255,0.9) 1%, rgba(120,228,252,1) 100%);
+		border: 1px solid lightblue;
+		border-radius: 3px;
+		padding: 5px;
+		margin: 5px;
+		color: white;
+		font-weight: bold;
+	}
+	.subForum_header
+	{
+		background-color: white;
+		border: 1px solid lightblue;
+		border-radius: 3px;
+		padding: 1px;
+		font-size: 12px;
+		margin: 5px;
+	}
+	.description
+	{
+		margin-left: 27px;
+	}
+	.subForum_icon
+	{
+		width: 24px;
+		height: 24px;
+	}
+	.subForum_title
+	{
+		font-weight: bold;
+		text-decoration: none !important;
+	}
+</style>
+<script>
+var alertBox = document.getElementById("alert");
+
+document.getElementById("close").onclick = function (e){
+    alertBox.style.display = "none";
+}
+</script>

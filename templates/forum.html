@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block body %}
+
+<div class="container-fluid">
+	<div class="row nav_header">
+
+		<div class="col-3 nav_child" style="font-size:12px;">
+			<h6 align="center" style="font-size: 12px;">Most Posted Users</h6>
+			{% for user in most_posted_users %}
+			<div class="row">
+				<div class="col-10">
+				<a align="left" href="#" style="font-weight: bold;color:{{ user.userpermission.get_color }}">
+					{{ user }}
+				</a>  
+				</div>
+				<div class="col-2">{{ user.topic_count }}</div>
+			</div>
+			{% endfor %}
+		</div>
+
+		<div class="col-3 nav_child">
+			<h6 align="center" style="font-size: 12px;">Last Registered Users</h6>
+			{% for user in last_ten_user %}
+				<div class="forum_nav"><a href="#">{{user}}</a></div>
+			{% endfor %}
+		</div>
+
+		<div class="col-3 nav_child">
+			<h6 align="center" style="font-size: 12px;">Recent Comments</h6>
+			{% for comment in last_ten_comment %}
+				<div class="forum_nav"><a href="{% url 'Topic:show' comment.topic.forum comment.topic.slug %}">{{comment.topic}}</a></div>
+			{% endfor %}
+		</div>
+
+		<div class="col-3 nav_child">
+			<h6 align="center" style="font-size: 12px;">Recently Opened Topics</h6>
+			{% for topic in last_ten_topic %}
+				<div class="forum_nav"><a href="{% url 'Topic:show' topic.forum topic.slug %}">{{topic}}</a></div>
+			{% endfor %}
+		</div>
+
+	</div>
+	{% for forum in forums %}
+		<div class="forum_header">
+			{{forum}}
+		</div>
+		<div class="row subForum_header">
+	    	<div class="col-9" align="center">Forum Name</div>
+	    	<div class="col-1 border_lr">Topic Count</div>
+	    	<div class="col-1">Comment Count</div>
+	    	<div class="col-1 border_lr">Moderators</div>
+		</div>
+		{% for subForum in forum.subforum_set.union %}
+		<div class="row subForum_header">
+			<div class="col-9">
+				{% if subforum.icon %}<img src="" class="subForum_icon"> {% endif %}
+	    		<a href="{% url 'Forum:list' subForum.name %}" class="subForum_title">{{subForum.name}}</a> <br>
+	    		<small class="description">{% if subForum.description %}{{subForum.description}}{% endif %}</small>
+			</div>
+			<div class="col-1 border_lr">{{subForum.topic_count}}</div>
+			<div class="col-1">{{subForum.comment_count}}</div>
+			<div class="col-1 border_lr">
+				{% if subForum.moderator_set %}
+				{% for mod in subForum.moderator_set.union %}
+					<a href="#" style="font-size:10px;font-weight: bold;color:{{ mod.user.userpermission.get_color }};">{{mod}}</a><br>
+				{% endfor %}
+				{% endif %}
+			</div>
+		</div>
+		{% endfor %}
+	{% endfor %}
+</div>
+
+{% include "footer.html" %}
+{% endblock %}
